@@ -27,11 +27,11 @@ jobs:
 
       - name: Build Windows
         run: flutter build windows --release
-	- name: Copy Visual C++ Runtime
-	  shell: pwsh
-	  run: |
-		$release = "build/windows/x64/runner/Release"
 
+      - name: Copy Visual C++ Runtime
+        shell: pwsh
+        run: |
+                $release = "build/windows/x64/runner/Release"
     		Copy-Item `
       			"C:\Windows\System32\msvcp140.dll" `
       			$release
