@@ -1,0 +1,48 @@
+name: Flutter Build Android Debug
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # 允許在 GitHub 網頁上手動點擊執行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 檢出程式碼
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. 設定 Java 環境 (Android 編譯必備)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17' # 適用於新版 Flutter，若舊專案報錯可改為 '11'
+          cache: 'gradle'    # 自動快取 Gradle 依賴，大幅加快後續編譯速度
+
+      # 3. 設定 Flutter 環境
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true        # 自動快取 Flutter SDK
+
+      # 4. 安裝專案依賴
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. 編譯 Debug APK
+      - name: Build Debug APK
+        run: flutter build apk --debug
+
+      # 6. 將編譯好的 Debug APK 上傳為 GitHub Artifacts (供下載)
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+
